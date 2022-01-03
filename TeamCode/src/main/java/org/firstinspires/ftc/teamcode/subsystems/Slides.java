@@ -36,11 +36,18 @@ public class Slides {
         THREE
     }
 
+    public enum State{
+        INACTIVE,
+        REACHED_THRESHOLD,
+        BUSY
+    }
+
     Level level = Level.NULL;
+    State state = State.INACTIVE;
 
 
 
-    public void lift(Level level){
+    public void liftTo  (Level level){
         this.level = level;
         double ticks = 100;
         switch(level){
@@ -66,12 +73,17 @@ public class Slides {
             rightMotor.setPower(pidfController.update(leftMotor.getCurrentPosition()));
         }else{
             holdPosition();
+            state = State.INACTIVE;
         }
     }
 
     public void holdPosition(){
         leftMotor.setPower(0);
         rightMotor.setPower(0);
+    }
+
+    public double percentToTarget(){
+        return (leftMotor.getCurrentPosition() / pidfController.getTargetPosition()) * 100;
     }
 
 }
