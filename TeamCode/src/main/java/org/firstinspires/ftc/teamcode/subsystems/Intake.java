@@ -6,21 +6,17 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
-    DcMotorEx leftMotor;
-    DcMotorEx rightMotor;
+    DcMotorEx intake;
     HardwareMap hardwareMap;
     public Intake(HardwareMap hw){
         hardwareMap = hw;
-        leftMotor = hardwareMap.get(DcMotorEx.class, "leftMotor");
-        rightMotor = hardwareMap.get(DcMotorEx.class, "rightMotor");
-        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public void stop(){
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
+        intake.setPower(0);
     }
     public void setPower(double power){
-        leftMotor.setPower(power);
-        rightMotor.setPower(power);
+        intake.setPower(power);
     }
 }

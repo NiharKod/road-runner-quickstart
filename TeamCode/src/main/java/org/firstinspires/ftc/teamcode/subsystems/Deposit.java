@@ -18,12 +18,10 @@ public class Deposit {
         claw = hardwareMap.get(Servo.class, "claw");
         virtualFourBar = hardwareMap.get(Servo.class, "virtualFourBar");
         wrist = hardwareMap.get(Servo.class, "wrist");
-        slides = new Slides(hardwareMap);
+     //   slides = new Slides(hardwareMap);
         intake = new Intake(hardwareMap);
         gamepad = gamepad1;
         this.timer = timer;
-
-
     }
     private enum State{
         START,
@@ -33,7 +31,8 @@ public class Deposit {
         OPEN_CLAW,
         EXTEND_LIFT,
         FLIP_V4B,
-        RETRACT_V4B
+        RETRACT_V4B,
+        DONE
     }
 
     State depositState = State.START;
@@ -54,6 +53,7 @@ public class Deposit {
     }
 
     public void updateGoalDepositing(){
+        //depositing;
         switch(depositState){
             case START:
                 if(gamepad.x) {
@@ -67,16 +67,22 @@ public class Deposit {
                     closeClaw();
                     //check if there has been enough time;
                     if(timer.seconds() >= .5){
-                        depositState = State.EXTEND_LIFT;
+                        depositState = State.FLIP_V4B;
                     }
                 break;
             case EXTEND_LIFT:
                 slides.liftTo(Slides.Level.THREE);
                 if(slides.percentToTarget() >= 75){
                     depositState = State.FLIP_V4B;
+                    timer.reset();
                 }
                 break;
-            case: 
+            case FLIP_V4B:
+                v4bThree();
+                if(timer.startTime() >= .5){
+                    depositState = State.DONE;
+                }
+                break;
         }
     }
 }

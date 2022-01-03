@@ -20,7 +20,7 @@ import kotlin.math.sqrt
  * @param timeout max time to wait for the error to be admissible
  * @param clock clock
  */
-class ImprovedRamsete @JvmOverloads constructor(
+public class ImprovedRamsete @JvmOverloads constructor(
         admissibleError: Pose2d = Pose2d(2.0, 2.0, Math.toRadians(5.0)),
         timeout: Double =  0.5,
         clock: NanoClock = NanoClock.system(),
