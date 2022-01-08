@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
@@ -19,6 +20,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
  */
 @TeleOp(group = "drive")
 public class Tele extends LinearOpMode {
+    public Servo claw;
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
@@ -28,9 +31,12 @@ public class Tele extends LinearOpMode {
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Intake intake = new Intake(hardwareMap);
 
+        claw = hardwareMap.get(Servo.class, "claw");
+
+
 
         waitForStart();
-
+        claw.setPosition(.5);
         while (!isStopRequested()) {
             drive.setWeightedDrivePower(
                     new Pose2d(
