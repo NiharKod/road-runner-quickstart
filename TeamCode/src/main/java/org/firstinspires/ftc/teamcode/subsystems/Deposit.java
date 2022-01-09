@@ -17,7 +17,6 @@ public class Deposit {
     ElapsedTime timer;
     public static double open = .6;
     public static double close = .43;
-
     public static double resetV4b = 0.2;
     public static double extendMid = 0.3;
     public static double extendReset = .2;
@@ -62,72 +61,66 @@ public class Deposit {
         wrist.setPosition(wrist2);
     }
 
+    public enum State{
+        START,
+        IDLE,
+        INTAKE_OFF,
+        ARM_IDLE,
+        WRIST_DEPOSIT,
+        CLOSE_CLAW,
+        LIFT_SLIDES,
+        ARM_SCORING
+    }
 
-//public void updateGoalDepositing(){
-//        //depositing;
-//        switch(depositState){
-//            case START:
-//                if(gamepad.x) {
-//                    intake.stop();
-//                    depositState = State.CLOSE_CLAW;
-//                    timer.reset();
-//                }
-//                break;
-//            case OPEN_CLAW:
-//                    //close claw
-//                    closeClaw();
-//                    //check if there has been enough time;
-//                    if(timer.seconds() >= .5){
-//                        depositState = State.FLIP_V4B;
-//                    }
-//                break;
-//            case EXTEND_LIFT:
-//                slides.liftTo(Slides.Level.THREE);
-//                if(slides.percentToTarget() >= 75){
-//                    depositState = State.FLIP_V4B;
-//                    timer.reset();
-//                }
-//                break;
-//            case FLIP_V4B:
-//                v4bThree();
-//                if(timer.startTime() >= .5){
-//                    depositState = State.DONE;
-//                }
-//                break;
-//        }
-//    }
+    State state = State.IDLE;
 
-//    public void updateGoalDepositing(){
-//        //depositing;
-//        switch(depositState){
-//            case START:
-//                if(gamepad.x) {
-//                    intake.stop();
-//                    depositState = State.CLOSE_CLAW;
-//                    timer.reset();
-//                }
-//                break;
-//            case OPEN_CLAW:
-//                    //close claw
-//                    closeClaw();
-//                    //check if there has been enough time;
-//                    if(timer.seconds() >= .5){
-//                        depositState = State.FLIP_V4B;
-//                    }
-//                break;
-//            case EXTEND_LIFT:
-//                slides.liftTo(Slides.Level.THREE);
-//                if(slides.percentToTarget() >= 75){
-//                    depositState = State.FLIP_V4B;
-//                    timer.reset();
-//                }
-//                break;
-//            case FLIP_V4B:
-//                v4bThree();
-//                if(timer.startTime() >= .5){
-//                    depositState = State.DONE;
-//                }
-//                break;
-//        }
-//    }
+
+    public void update(){
+        if(gamepad.x){
+            state = State.START;
+        }
+        switch(state){
+            case START:
+                intake.stop();
+                state = State.WRIST_DEPOSIT;
+                break;
+            case ARM_IDLE:
+                timer.reset();
+                v4bMid();
+                if(timer.milliseconds() > 4000){
+                    state = State.WRIST_DEPOSIT;
+                }
+                break;
+            case WRIST_DEPOSIT:
+                timer.reset();
+                wristDeposit();
+                if(timer.milliseconds() > 4000){
+                    state = State.CLOSE_CLAW;
+                }
+                break;
+            case CLOSE_CLAW:
+                timer.reset();
+                closeClaw();
+                if(timer.milliseconds() > 3000){
+                    state = State.LIFT_SLIDES;
+                }
+                break;
+            case LIFT_SLIDES:
+                Slides.state = Slides.State.LIFT;
+            case ARM_SCORING:
+                timer.reset();
+                v4bthree();
+                if(timer.milliseconds() > 1000){
+                   state = State.IDLE;
+                }
+                return;
+
+        }
+        slides.lift();
+    }
+
+
+    public void reset(){
+        
+    }
 }

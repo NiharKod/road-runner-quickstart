@@ -33,34 +33,26 @@ public class Slides {
         controller.setTolerance(0);
     }
 
-    public enum Level {
-        NULL,
-        ONE,
-        TWO,
-        THREE
-    }
 
     public enum State{
         INACTIVE,
-        REACHED_THRESHOLD,
-        BUSY
+        LIFT,
+        RESET
     }
 
-    Level level = Level.NULL;
-    State state = State.INACTIVE;
+   public static State state = State.INACTIVE;
 
 
     public void lift(){
-        double ticks = 200;
-        double gain = controller.calculate(200,leftMotor.getCurrentPosition());
-
-        leftMotor.setPower(gain);
-        rightMotor.setPower(-gain);
+        if(state.equals(State.LIFT)) {
+            leftMotor.setPower(controller.calculate(200,leftMotor.getCurrentPosition()));
+            rightMotor.setPower(-controller.calculate(200,leftMotor.getCurrentPosition()));
+        }else if(state.equals(State.RESET)){
+            leftMotor.setPower(controller.calculate(0,leftMotor.getCurrentPosition()));
+            rightMotor.setPower(-controller.calculate(0,leftMotor.getCurrentPosition()));
+        }
     }
 
-    public void reset(){
-
-    }
 
     public void holdPosition(){
         leftMotor.setPower(0);
