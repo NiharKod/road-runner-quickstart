@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,15 +15,11 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 public class Slides {
     public DcMotorEx leftMotor;
     public DcMotorEx rightMotor;
-    TouchSensor retractSensor;
     HardwareMap hw;
-    public static double kp = 0;
-    public static double ki = 0;
+    public static double kp = 0.00425;
+    public static double ki = 0.11;
     public static double kd = 0;
-    public static double kf = 0;
-    PIDFController pidfController = new PIDFController(new PIDCoefficients(kp,ki,kd));
-
-    int targetTicks = 0;
+    PIDController controller = new PIDController(kp,ki,kd);
     public Slides(HardwareMap hw){
         this.hw = hw;
         leftMotor = hw.get(DcMotorEx.class, "leftMotor");
@@ -33,6 +30,7 @@ public class Slides {
         rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        controller.setTolerance(0);
     }
 
     public enum Level {
@@ -52,32 +50,16 @@ public class Slides {
     State state = State.INACTIVE;
 
 
-
-    public void liftTo  (Level level){
-        this.level = level;
+    public void lift(){
         double ticks = 200;
-        switch(level){
-            case ONE: ticks = 0; break;
-            case TWO: ticks = 0; break;
-            case THREE: ticks = 200; break;
-        }
-        pidfController.setTargetPosition(ticks);
+        double gain = controller.calculate(200,leftMotor.getCurrentPosition());
 
-            leftMotor.setPower(pidfController.update(leftMotor.getCurrentPosition()));
-            rightMotor.setPower(-pidfController.update(leftMotor.getCurrentPosition()));
-
+        leftMotor.setPower(gain);
+        rightMotor.setPower(-gain);
     }
 
     public void reset(){
-        pidfController.setTargetPosition(0);
-        if(pidfController.getLastError() >= 3) {
 
-            leftMotor.setPower(pidfController.update(leftMotor.getCurrentPosition()));
-            rightMotor.setPower(pidfController.update(leftMotor.getCurrentPosition()));
-        }else{
-            holdPosition();
-            state = State.INACTIVE;
-        }
     }
 
     public void holdPosition(){
@@ -96,7 +78,7 @@ public class Slides {
     }
 
     public double percentToTarget(){
-        return (leftMotor.getCurrentPosition() / pidfController.getTargetPosition()) * 100;
+        return (leftMotor.getCurrentPosition() / controller.getSetPoint()) * 100;
     }
 
 }

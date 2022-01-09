@@ -24,7 +24,6 @@ public class SlideTuning extends LinearOpMode {
         slides = new Slides(hardwareMap);
 
         PIDFController pidfController = new PIDFController(new PIDCoefficients(kp,ki,kd));
-        PIDController controller = new PIDController(kp,ki,kd);
 
         waitForStart();
 
@@ -42,12 +41,9 @@ public class SlideTuning extends LinearOpMode {
 
          //   slides.setPower(gamepad1.right_stick_y);
 
-            controller.setPID(kp,ki,kd);
 
 
-           double gain = controller.calculate(200,slides.leftMotor.getCurrentPosition());
-           slides.leftMotor.setPower(gain);
-            slides.rightMotor.setPower(-gain);
+
 
 
 
