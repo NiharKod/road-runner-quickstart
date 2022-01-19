@@ -5,34 +5,41 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @Config
 public class Deposit {
    public Servo claw;
-  public  Servo virtualFourBar;
+   public  Servo virtualFourBar;
    public Servo wrist;
     Slides slides;
     Intake intake;
-    double currentTime = 0;
     Gamepad gamepad;
     ElapsedTime timer;
-    public static double open = .6;
+    Telemetry telemetry;
+    public static double open = .55;
     public static double close = .43;
-    public static double resetV4b = 0.2;
-    public static double extendMid = 0.3;
-    public static double extendReset = .2;
-    public static double extendOne = 0.82;
-    public static double extendthree = 0.55;
 
-    public static double wristIdle = .78;
-    public static double wrist2 = 0.08;
+    public static double armIdle = 0.45;
+    public static double armIntake = .2;
+    public static double armLevelOne = 0.82;
+    public static double armLevelThree = 0.64;
 
-    public Deposit(HardwareMap hardwareMap, Gamepad gamepad1, ElapsedTime timer){
+    public static double wristIntake = .78;
+    public static double wristDeposit = 0.05;
+    public static double wristIdle = .72;
+
+    public Deposit(HardwareMap hardwareMap, Gamepad gamepad1, ElapsedTime timer, Telemetry telemetry){
         claw = hardwareMap.get(Servo.class, "claw");
         virtualFourBar = hardwareMap.get(Servo.class, "arm");
         wrist = hardwareMap.get(Servo.class, "wrist");
         intake = new Intake(hardwareMap);
+        slides = new Slides(hardwareMap);
         gamepad = gamepad1;
         this.timer = timer;
+        this.telemetry = telemetry;
+
     }
     public void closeClaw(){
         claw.setPosition(close);
@@ -40,87 +47,165 @@ public class Deposit {
     public void openClaw(){
         claw.setPosition(open);
     }
-    public void v4bReset(){
-        virtualFourBar.setPosition(resetV4b);
-    }
-    public void v4bMid(){
-        virtualFourBar.setPosition(extendMid);
+    public void armIntake(){ virtualFourBar.setPosition(armIntake); }
+    public void armIdle(){
+        virtualFourBar.setPosition(armIdle);
     }
 
-    public void v4bone(){
-        virtualFourBar.setPosition(extendOne);
-    }
-    public void v4bthree(){
-        virtualFourBar.setPosition(extendthree);
+    public void armLvlThree(){
+        virtualFourBar.setPosition(armLevelThree);
     }
 
-    public void wristIdle(){
-        wrist.setPosition(wristIdle);
-    }
+    public void wristIdle(){ wrist.setPosition(wristIdle); }
     public void wristDeposit(){
-        wrist.setPosition(wrist2);
+        wrist.setPosition(wristDeposit);
     }
+    public void wristIntake(){ wrist.setPosition(wristIntake);}
 
     public enum State{
         START,
+        OPEN_CLAW,
+        RESET,
         IDLE,
-        INTAKE_OFF,
         ARM_IDLE,
         WRIST_DEPOSIT,
         CLOSE_CLAW,
-        LIFT_SLIDES,
-        ARM_SCORING
+        STOP_INTAKE,
+        SLIDES_LIFT,
+        SLIDES_RESET,
+        ARM_SCORING,
+        WRIST_IDLE,
+        ARM_INTAKE,
+        DUMP
+    }
+    public enum StateR{
+        START,
+        OPEN_CLAW,
+        RESET,
+        IDLE,
+        ARM_IDLE,
+        WRIST_DEPOSIT,
+        CLOSE_CLAW,
+        STOP_INTAKE,
+        SLIDES_LIFT,
+        SLIDES_RESET,
+        ARM_SCORING,
+        WRIST_IDLE,
+        ARM_INTAKE,
+        WRIST_INTAKE
     }
 
-    State state = State.IDLE;
+    public static State state = State.ARM_IDLE;
+    public static StateR stateR = StateR.ARM_IDLE;
+
+
 
 
     public void update(){
         if(gamepad.x){
             state = State.START;
+            timer.reset();
+            intake.stop();
+
         }
         switch(state){
             case START:
-                intake.stop();
-                state = State.WRIST_DEPOSIT;
+                closeClaw();
+                if(timer.milliseconds() > 150){
+                    state = State.WRIST_IDLE;
+                }
+                break;
+            case WRIST_IDLE:
+                wristIdle();
+                if(timer.milliseconds() > 300){
+                    state = State.ARM_IDLE;
+                }
                 break;
             case ARM_IDLE:
-                timer.reset();
-                v4bMid();
-                if(timer.milliseconds() > 4000){
+                armIdle();
+                if(timer.milliseconds() > 600){
                     state = State.WRIST_DEPOSIT;
                 }
                 break;
             case WRIST_DEPOSIT:
-                timer.reset();
                 wristDeposit();
-                if(timer.milliseconds() > 4000){
-                    state = State.CLOSE_CLAW;
+                if(timer.milliseconds() > 750){
+                    state = State.SLIDES_LIFT;
                 }
                 break;
-            case CLOSE_CLAW:
-                timer.reset();
-                closeClaw();
-                if(timer.milliseconds() > 3000){
-                    state = State.LIFT_SLIDES;
-                }
-                break;
-            case LIFT_SLIDES:
+            case SLIDES_LIFT:
                 Slides.state = Slides.State.LIFT;
-            case ARM_SCORING:
-                timer.reset();
-                v4bthree();
                 if(timer.milliseconds() > 1000){
-                   state = State.IDLE;
+                    state = State.DUMP;
+                    timer.reset();
                 }
+                break;
+            case DUMP:
+                armLvlThree();
+                state = State.STOP_INTAKE;
                 return;
 
         }
-        slides.lift();
+        slides.liftUpdate();
     }
 
 
-    public void reset(){
-        
+    public void resetUpdate(){
+        if(gamepad.b){
+            stateR = StateR.RESET;
+            timer.reset();
+        }
+        switch(stateR){
+            case RESET:
+                openClaw();
+                if(timer.milliseconds() > 150){
+                    stateR = StateR.ARM_IDLE;
+                }
+                break;
+            case ARM_IDLE:
+                armIdle();
+                if(timer.milliseconds() > 300){
+                    stateR = StateR.WRIST_IDLE;
+                }
+                break;
+            case WRIST_IDLE:
+                wristIdle();
+                if(timer.milliseconds() > 600){
+                    stateR = StateR.SLIDES_RESET;
+                }
+                break;
+            case SLIDES_RESET:
+                Slides.state = Slides.State.RESET;
+                if(timer.milliseconds() > 750){
+                    stateR = StateR.CLOSE_CLAW;
+                }
+                break;
+            case CLOSE_CLAW:
+                closeClaw();
+                if(timer.milliseconds() > 900){
+                    stateR = StateR.ARM_INTAKE;
+                }
+                break;
+            case ARM_INTAKE:
+                armIntake();
+                if(timer.milliseconds() > 1050){
+                    stateR = StateR.OPEN_CLAW;
+                }
+                break;
+            case OPEN_CLAW:
+                openClaw();
+                if(timer.milliseconds() > 1200){
+                    stateR = StateR.WRIST_INTAKE;
+                }
+                break;
+            case WRIST_INTAKE:
+                wristIntake();
+                if(timer.milliseconds() > 1350){
+                    stateR = StateR.IDLE;
+                }
+                return;
+        }
+        slides.liftUpdate();
     }
+
 }

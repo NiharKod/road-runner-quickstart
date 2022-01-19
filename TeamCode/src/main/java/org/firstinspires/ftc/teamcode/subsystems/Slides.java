@@ -30,7 +30,7 @@ public class Slides {
         rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        controller.setTolerance(0);
+       // controller.setTolerance(0);
     }
 
 
@@ -43,13 +43,13 @@ public class Slides {
    public static State state = State.INACTIVE;
 
 
-    public void lift(){
-        if(state.equals(State.LIFT)) {
-            leftMotor.setPower(controller.calculate(200,leftMotor.getCurrentPosition()));
-            rightMotor.setPower(-controller.calculate(200,leftMotor.getCurrentPosition()));
-        }else if(state.equals(State.RESET)){
-            leftMotor.setPower(controller.calculate(0,leftMotor.getCurrentPosition()));
-            rightMotor.setPower(-controller.calculate(0,leftMotor.getCurrentPosition()));
+    public void liftUpdate(){
+        if(state == State.LIFT) {
+            leftMotor.setPower(controller.calculate(230,leftMotor.getCurrentPosition()));
+            rightMotor.setPower(-controller.calculate(230,leftMotor.getCurrentPosition()));
+        }else if(state == State.RESET){
+            leftMotor.setPower((controller.calculate(0,leftMotor.getCurrentPosition())) / 3);
+            rightMotor.setPower((-controller.calculate(0,leftMotor.getCurrentPosition())) / 3);
         }
     }
 

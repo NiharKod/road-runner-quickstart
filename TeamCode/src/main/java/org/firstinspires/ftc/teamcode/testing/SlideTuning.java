@@ -8,48 +8,74 @@ import com.acmerobotics.roadrunner.control.PIDFController;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drive.opmode.Tele;
+import org.firstinspires.ftc.teamcode.subsystems.Deposit;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
 @Config
 @TeleOp
 public class SlideTuning extends LinearOpMode {
-    Slides slides;
-    public static double kp = .00001;
-    public static double ki = 0;
-    public static double kd = 0;
-    public static double kf = 0;
+    Deposit deposit;
+    DcMotorEx FL, FR, BL, BR;
+    Intake intake;
+
+
     @Override
     public void runOpMode() throws InterruptedException {
 
-        slides = new Slides(hardwareMap);
+        deposit = new Deposit(hardwareMap,gamepad1, new ElapsedTime(), telemetry);
+        intake = new Intake(hardwareMap);
+        FL = hardwareMap.get(DcMotorEx.class, "FL");
+        FR = hardwareMap.get(DcMotorEx.class, "FR");
+        BL = hardwareMap.get(DcMotorEx.class, "BL");
+        BR = hardwareMap.get(DcMotorEx.class, "BR");
 
-        PIDFController pidfController = new PIDFController(new PIDCoefficients(kp,ki,kd));
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);
 
+
+
+        Deposit.state = Deposit.State.IDLE;
+        Deposit.stateR = Deposit.StateR.IDLE;
+        Slides.state = Slides.State.RESET;
+
+        deposit.wristIntake();
+        deposit.armIntake();
+        deposit.openClaw();
         waitForStart();
 
-
         while(opModeIsActive()){
-            telemetry.addData("Left Motor Ticks", slides.leftMotor.getCurrentPosition());
-            telemetry.update();
+          //  telemetry.addData("Left Motor Ticks", slides.leftMotor.getCurrentPosition());
+          //  telemetry.update();
 
-            TelemetryPacket packet = new TelemetryPacket();
-            packet.put("Position", slides.leftMotor.getCurrentPosition());
-            packet.put("Desired", 200);
+          //  TelemetryPacket packet = new TelemetryPacket();
+          //  packet.put("Position", slides.leftMotor.getCurrentPosition());
+           // packet.put("Desired", 200);
 
-            FtcDashboard dashboard = FtcDashboard.getInstance();
-            dashboard.sendTelemetryPacket(packet);
+          //  FtcDashboard dashboard = FtcDashboard.getInstance();
+           // dashboard.sendTelemetryPacket(packet);
 
-         //   slides.setPower(gamepad1.right_stick_y);
+            double leftPower = gamepad1.left_stick_y;
+            double rightPower = gamepad1.right_stick_y;
+
+            FL.setPower(leftPower);
+            BL.setPower(leftPower);
+            FR.setPower(rightPower);
+            BR.setPower(rightPower);
+
+            intake.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
 
 
 
 
 
 
-
-
-
-
+            deposit.update();
+            deposit.resetUpdate();
         }
 
     }

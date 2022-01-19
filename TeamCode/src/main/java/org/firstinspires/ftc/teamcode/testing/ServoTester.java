@@ -16,22 +16,22 @@ public class ServoTester extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         ElapsedTime timer = new ElapsedTime();
-        Deposit depo = new Deposit(hardwareMap,gamepad1, timer);
+        Deposit depo = new Deposit(hardwareMap,gamepad1, timer, telemetry);
 
     //    depo.wrist.setPosition(.5);
         waitForStart();
         while(opModeIsActive()){
 
             if(gamepad1.a){
-                depo.v4bMid();
+                depo.wristIdle();
             }
 
             if(gamepad1.b){
-               depo.v4bone();
+               depo.wristDeposit();
             }
 
             if(gamepad1.x){
-                depo.v4bReset();
+                depo.wristIntake();
             }
 
 
