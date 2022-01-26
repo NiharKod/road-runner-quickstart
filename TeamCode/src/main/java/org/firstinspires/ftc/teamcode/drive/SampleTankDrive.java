@@ -68,7 +68,7 @@ public class SampleTankDrive extends TankDrive {
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint accelConstraint = getAccelerationConstraint(MAX_ACCEL);
 
-    private TrajectoryFollower follower;
+    private ImprovedRamsete follower;
 
     private List<DcMotorEx> motors, leftMotors, rightMotors;
     private BNO055IMU imu;
@@ -79,6 +79,7 @@ public class SampleTankDrive extends TankDrive {
         super(kV, kA, kStatic, TRACK_WIDTH);
 
         follower = new ImprovedRamsete();
+       // follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(.5,.5,Math.toRadians(.5)),.5);
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 

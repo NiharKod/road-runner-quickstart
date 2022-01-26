@@ -8,32 +8,33 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(group = "drive")
-public class SplineTest extends LinearOpMode {
+@Autonomous(group = "Auto")
+public class BlueSide extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
+        Intake intake = new Intake(hardwareMap);
+
+        drive.setPoseEstimate(new Pose2d(30,-7,Math.toRadians(-90)));
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         Trajectory traj = drive.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(30, 30), 0)
+                .lineTo(new Vector2d(30,-14))
                 .build();
-
         drive.followTrajectory(traj);
 
-        sleep(2000);
 
-        drive.followTrajectory(
-                drive.trajectoryBuilder(traj.end(), true)
-                        .splineTo(new Vector2d(0, 0), Math.toRadians(180))
-                        .build()
-        );
+
+
+
+
     }
 }

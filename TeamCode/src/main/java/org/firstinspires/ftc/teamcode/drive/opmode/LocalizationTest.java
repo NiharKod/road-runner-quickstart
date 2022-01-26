@@ -4,6 +4,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
@@ -17,30 +19,38 @@ import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
  */
 @TeleOp(group = "drive")
 public class LocalizationTest extends LinearOpMode {
-    @Override
+    DcMotorEx FL, FR, BL, BR;    @Override
     public void runOpMode() throws InterruptedException {
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
+        FL = hardwareMap.get(DcMotorEx.class, "FL");
+        FR = hardwareMap.get(DcMotorEx.class, "FR");
+        BL = hardwareMap.get(DcMotorEx.class, "BL");
+        BR = hardwareMap.get(DcMotorEx.class, "BR");
+
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.setPoseEstimate(new Pose2d(30,-7,Math.toRadians(90)));
 
         waitForStart();
 
-        while (!isStopRequested()) {
-            drive.setWeightedDrivePower(
-                    new Pose2d(
-                            0,
-                            -gamepad1.left_stick_y
-                            -gamepad1.right_stick_x
-                    )
-            );
+
+        while(opModeIsActive()) {
+            double leftPower = gamepad1.left_stick_y;
+            double rightPower = gamepad1.right_stick_y;
+
+            FL.setPower(-leftPower);
+            BL.setPower(-leftPower);
+            FR.setPower(-rightPower);
+            BR.setPower(-rightPower);
 
             drive.update();
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
             telemetry.update();
         }
+        }
     }
-}
+
