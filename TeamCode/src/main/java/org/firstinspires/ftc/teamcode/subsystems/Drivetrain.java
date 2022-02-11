@@ -38,7 +38,7 @@ public class Drivetrain {
         Pose2d currentPose = getPosition();
         double targetAngle = Math.atan2(pose.getY() - currentPose.getY(), pose.getX()
                 - currentPose.getX()) - Math.toRadians(90);
-        double turnPower = controller.calculate(currentPose.getHeading(), Math.toDegrees(pose.getHeading()));
+       // double turnPower = controller.calculate(currentPose.getHeading(), Math.toDegrees(pose.getHeading()));
     }
 
     public void update(){

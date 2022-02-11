@@ -19,4 +19,7 @@ public class Intake {
     public void setPower(double power){
         intake.setPower(power);
     }
+    public void disable(){intake.setMotorDisable();}
+    public void enable(){intake.setMotorEnable();}
+
 }

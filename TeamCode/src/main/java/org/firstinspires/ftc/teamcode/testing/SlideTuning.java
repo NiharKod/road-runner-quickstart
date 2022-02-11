@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.control.PIDFController;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -22,6 +23,8 @@ public class SlideTuning extends LinearOpMode {
     Deposit deposit;
     DcMotorEx FL, FR, BL, BR;
     Intake intake;
+    CRServo spinner;
+
 
 
     @Override
@@ -33,6 +36,8 @@ public class SlideTuning extends LinearOpMode {
         FR = hardwareMap.get(DcMotorEx.class, "FR");
         BL = hardwareMap.get(DcMotorEx.class, "BL");
         BR = hardwareMap.get(DcMotorEx.class, "BR");
+         spinner = hardwareMap.get(CRServo.class, "spinner");
+
 
         FL.setDirection(DcMotorSimple.Direction.REVERSE);
         BL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -70,6 +75,17 @@ public class SlideTuning extends LinearOpMode {
             intake.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
 
 
+            boolean spinnerLeft = gamepad1.dpad_left;
+            boolean spinnerRight = gamepad1.dpad_right;
+            if(spinnerLeft){
+                spinner.setPower(1);
+            }
+            if(spinnerRight){
+                spinner.setPower(-1);
+            }
+            if(gamepad1.dpad_down){
+                spinner.setPower(0);
+            }
 
 
 

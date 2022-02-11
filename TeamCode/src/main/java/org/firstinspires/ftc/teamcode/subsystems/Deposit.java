@@ -21,13 +21,13 @@ public class Deposit {
     public static double open = .55;
     public static double close = .43;
 
-    public static double armIdle = 0.45;
+    public static double armIdle = 0.5;
     public static double armIntake = .2;
     public static double armLevelOne = 0.82;
     public static double armLevelThree = 0.64;
 
-    public static double wristIntake = .78;
-    public static double wristDeposit = 0.05;
+    public static double wristIntake = .77;
+    public static double wristDeposit = 0.02;
     public static double wristIdle = .72;
 
     public Deposit(HardwareMap hardwareMap, Gamepad gamepad1, ElapsedTime timer, Telemetry telemetry){
@@ -64,6 +64,7 @@ public class Deposit {
 
     public enum State{
         START,
+        START_AUTO,
         OPEN_CLAW,
         RESET,
         IDLE,
@@ -80,6 +81,7 @@ public class Deposit {
     }
     public enum StateR{
         START,
+        RESET_AUTO,
         OPEN_CLAW,
         RESET,
         IDLE,
@@ -101,13 +103,11 @@ public class Deposit {
 
 
 
-    public void update(){
-        if(gamepad.x){
+    public void updateAuto(){
+        if(state.equals(State.START_AUTO)){
             state = State.START;
             timer.reset();
-            intake.stop();
-
-        }
+       }
         switch(state){
             case START:
                 closeClaw();
@@ -125,6 +125,7 @@ public class Deposit {
                 armIdle();
                 if(timer.milliseconds() > 600){
                     state = State.WRIST_DEPOSIT;
+                    intake.enable();
                 }
                 break;
             case WRIST_DEPOSIT:
@@ -145,6 +146,111 @@ public class Deposit {
                 state = State.STOP_INTAKE;
                 return;
 
+        }
+        slides.liftUpdate();
+    }
+
+    public void update(){
+        if(gamepad.x){
+            state = State.START;
+            timer.reset();
+        }
+        switch(state){
+            case START:
+                closeClaw();
+                if(timer.milliseconds() > 150){
+                    state = State.WRIST_IDLE;
+                }
+                break;
+            case WRIST_IDLE:
+                wristIdle();
+                if(timer.milliseconds() > 300){
+                    state = State.ARM_IDLE;
+                }
+                break;
+            case ARM_IDLE:
+                armIdle();
+                if(timer.milliseconds() > 600){
+                    state = State.WRIST_DEPOSIT;
+                    intake.enable();
+                }
+                break;
+            case WRIST_DEPOSIT:
+                wristDeposit();
+                if(timer.milliseconds() > 750){
+                    state = State.SLIDES_LIFT;
+                }
+                break;
+            case SLIDES_LIFT:
+                Slides.state = Slides.State.LIFT;
+                if(timer.milliseconds() > 1000){
+                    state = State.DUMP;
+                    timer.reset();
+                }
+                break;
+            case DUMP:
+                armLvlThree();
+                state = State.STOP_INTAKE;
+                return;
+
+        }
+        slides.liftUpdate();
+    }
+
+    public void resetUpdateAuto(){
+        if(stateR.equals(StateR.RESET_AUTO)){
+            stateR = StateR.RESET;
+            timer.reset();
+        }
+        switch(stateR){
+            case RESET:
+                openClaw();
+                if(timer.milliseconds() > 150){
+                    stateR = StateR.ARM_IDLE;
+                }
+                break;
+            case ARM_IDLE:
+                armIdle();
+                if(timer.milliseconds() > 300){
+                    stateR = StateR.WRIST_IDLE;
+                }
+                break;
+            case WRIST_IDLE:
+                wristIdle();
+                if(timer.milliseconds() > 600){
+                    stateR = StateR.SLIDES_RESET;
+                }
+                break;
+            case SLIDES_RESET:
+                Slides.state = Slides.State.RESET;
+                if(timer.milliseconds() > 750){
+                    stateR = StateR.CLOSE_CLAW;
+                }
+                break;
+            case CLOSE_CLAW:
+                closeClaw();
+                if(timer.milliseconds() > 900){
+                    stateR = StateR.ARM_INTAKE;
+                }
+                break;
+            case ARM_INTAKE:
+                armIntake();
+                if(timer.milliseconds() > 1050){
+                    stateR = StateR.OPEN_CLAW;
+                }
+                break;
+            case OPEN_CLAW:
+                openClaw();
+                if(timer.milliseconds() > 1400){
+                    stateR = StateR.WRIST_INTAKE;
+                }
+                break;
+            case WRIST_INTAKE:
+                wristIntake();
+                if(timer.milliseconds() > 1500){
+                    stateR = StateR.IDLE;
+                }
+                return;
         }
         slides.liftUpdate();
     }
@@ -194,13 +300,13 @@ public class Deposit {
                 break;
             case OPEN_CLAW:
                 openClaw();
-                if(timer.milliseconds() > 1200){
+                if(timer.milliseconds() > 1400){
                     stateR = StateR.WRIST_INTAKE;
                 }
                 break;
             case WRIST_INTAKE:
                 wristIntake();
-                if(timer.milliseconds() > 1350){
+                if(timer.milliseconds() > 1500){
                     stateR = StateR.IDLE;
                 }
                 return;
