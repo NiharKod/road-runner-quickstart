@@ -241,14 +241,14 @@ public class Deposit {
                 break;
             case OPEN_CLAW:
                 openClaw();
-                if(timer.milliseconds() > 1400){
+                if(timer.milliseconds() > 1600){
                     stateR = StateR.WRIST_INTAKE;
                 }
                 break;
             case WRIST_INTAKE:
                 wristIntake();
-                if(timer.milliseconds() > 1500){
-                    stateR = StateR.IDLE;
+                if(timer.milliseconds() > 1800){
+                    stateR = StateR.STOP_INTAKE;
                 }
                 return;
         }
