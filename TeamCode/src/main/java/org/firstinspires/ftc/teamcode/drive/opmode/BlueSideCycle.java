@@ -82,8 +82,8 @@ public class BlueSideCycle extends LinearOpMode {
 
         while(opModeIsActive()){
             drive.update();
-            deposit.updateAuto();
-            deposit.resetUpdateAuto();
+          //  deposit.updateAuto();
+          //  deposit.resetUpdateAuto();
         }
 
     }

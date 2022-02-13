@@ -23,9 +23,9 @@ public class Deposit {
 
     public static double armIdle = 0.5;
     public static double armIntake = .2;
-    public static double armLevelOne = 0.82;
+    public static double armLevelOne = 0.9;
     public static double armLevelThree = 0.64;
-
+    public static double armLevelTwo = .7;
     public static double wristIntake = .77;
     public static double wristDeposit = 0.02;
     public static double wristIdle = .72;
@@ -103,10 +103,11 @@ public class Deposit {
 
 
 
-    public void updateAuto(){
+    public void updateAuto(String position){
         if(state.equals(State.START_AUTO)){
             state = State.START;
             timer.reset();
+
        }
         switch(state){
             case START:
@@ -197,7 +198,7 @@ public class Deposit {
         slides.liftUpdate();
     }
 
-    public void resetUpdateAuto(){
+    public void resetUpdateAuto(String position){
         if(stateR.equals(StateR.RESET_AUTO)){
             stateR = StateR.RESET;
             timer.reset();
@@ -247,6 +248,7 @@ public class Deposit {
                 break;
             case WRIST_INTAKE:
                 wristIntake();
+                state = State.STOP_INTAKE;
                 if(timer.milliseconds() > 2100){
                     stateR = StateR.STOP_INTAKE;
                 }

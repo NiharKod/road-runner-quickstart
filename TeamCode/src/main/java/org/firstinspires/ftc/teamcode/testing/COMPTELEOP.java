@@ -47,7 +47,8 @@ public class COMPTELEOP extends LinearOpMode {
         Deposit.state = Deposit.State.IDLE;
         Deposit.stateR = Deposit.StateR.IDLE;
         Slides.state = Slides.State.RESET;
-
+        Deposit.armLevelThree = .64;
+        Slides.setPoint = 230;
         deposit.wristIntake();
         deposit.armIntake();
         deposit.openClaw();

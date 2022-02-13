@@ -19,6 +19,7 @@ public class Slides {
     public static double kp = 0.00425;
     public static double ki = 0.11;
     public static double kd = 0;
+    public static int setPoint = 230;
     PIDController controller = new PIDController(kp,ki,kd);
     public Slides(HardwareMap hw){
         this.hw = hw;
@@ -45,8 +46,8 @@ public class Slides {
 
     public void liftUpdate(){
         if(state == State.LIFT) {
-            leftMotor.setPower(controller.calculate(230,leftMotor.getCurrentPosition()));
-            rightMotor.setPower(-controller.calculate(230,leftMotor.getCurrentPosition()));
+            leftMotor.setPower(controller.calculate(setPoint,leftMotor.getCurrentPosition()));
+            rightMotor.setPower(-controller.calculate(setPoint,leftMotor.getCurrentPosition()));
         }else if(state == State.RESET){
             leftMotor.setPower((controller.calculate(0,leftMotor.getCurrentPosition())) / 3);
             rightMotor.setPower((-controller.calculate(0,leftMotor.getCurrentPosition())) / 3);

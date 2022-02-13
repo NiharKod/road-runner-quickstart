@@ -56,6 +56,6 @@ public class BlueAsync extends OpMode {
     @Override
     public void loop() {
         drive.update();
-        deposit.updateAuto();
+      //  deposit.updateAuto();
     }
 }
