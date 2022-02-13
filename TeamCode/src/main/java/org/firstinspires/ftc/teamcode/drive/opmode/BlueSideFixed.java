@@ -54,13 +54,13 @@ public class BlueSideFixed extends LinearOpMode {
             FtcDashboard.getInstance().startCameraStream(detector.phoneCam, 4);
         }
         //check the position
-        if(position == "middle"){
+        if(position.equals("middle")){
             Deposit.armLevelThree = Deposit.armLevelTwo;
             Slides.setPoint = 0;
-        }else if(position =="right"){
+        }else if(position.equals("right")){
             Deposit.armLevelThree = .64;
             Slides.setPoint = 230;
-        }else if(position == "left"){
+        }else if(position.equals("left")){
             Deposit.armLevelThree = Deposit.armLevelOne;
             Slides.setPoint = 0;
         }
