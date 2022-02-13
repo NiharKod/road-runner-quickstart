@@ -39,7 +39,7 @@ public class BlueSideFixed extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     Deposit.state = Deposit.State.START_AUTO;
                 })
-                .splineTo(new Vector2d(60,-28),Math.toRadians(-90))
+                .splineTo(new Vector2d(62,-25),Math.toRadians(-90))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     Deposit.stateR = Deposit.StateR.RESET_AUTO;
                 })
@@ -54,14 +54,23 @@ public class BlueSideFixed extends LinearOpMode {
                     Deposit.state = Deposit.State.START_AUTO;
 
                 })
+                .waitSeconds(.25)
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     intake.setPower(0);
-                    Deposit.state = Deposit.State.START_AUTO;
-
                 })
+                .back(28)
                 .setReversed(true)
-                .splineTo(new Vector2d(82,-4),Math.toRadians(0))
-                .splineTo(new Vector2d(60,-28),Math.toRadians(90))
+//                .splineTo(new Vector2d(70,-10),Math.toRadians(-30))
+//                .setReversed(true)
+                .splineTo(new Vector2d(62,-25),Math.toRadians(-90))
+                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                    Deposit.stateR = Deposit.StateR.RESET_AUTO;
+                })
+                .setReversed(false)
+                .splineTo(new Vector2d(82,0),Math.toRadians(0))
+
+                .splineTo(new Vector2d(110,-2),Math.toRadians(0))
+
 
                 .build();
         waitForStart();

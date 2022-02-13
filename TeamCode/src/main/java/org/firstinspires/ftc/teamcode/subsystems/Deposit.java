@@ -235,19 +235,19 @@ public class Deposit {
                 break;
             case ARM_INTAKE:
                 armIntake();
-                if(timer.milliseconds() > 1050){
+                if(timer.milliseconds() > 1300){
                     stateR = StateR.OPEN_CLAW;
                 }
                 break;
             case OPEN_CLAW:
                 openClaw();
-                if(timer.milliseconds() > 1600){
+                if(timer.milliseconds() > 2000){
                     stateR = StateR.WRIST_INTAKE;
                 }
                 break;
             case WRIST_INTAKE:
                 wristIntake();
-                if(timer.milliseconds() > 1800){
+                if(timer.milliseconds() > 2100){
                     stateR = StateR.STOP_INTAKE;
                 }
                 return;
