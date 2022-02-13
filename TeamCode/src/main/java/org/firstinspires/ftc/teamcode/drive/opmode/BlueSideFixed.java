@@ -21,13 +21,9 @@ public class BlueSideFixed extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        Deposit.state = Deposit.State.IDLE;
-        Deposit.stateR = Deposit.StateR.IDLE;
-        Slides.state = Slides.State.RESET;
         Deposit deposit = new Deposit(hardwareMap,gamepad1, new ElapsedTime(), telemetry);
-        String position = "null";
-        drive.setPoseEstimate(new Pose2d(78,-7,Math.toRadians(-90)));
 
+        //set all of the static states to reset;
         Deposit.state = Deposit.State.IDLE;
         Deposit.stateR = Deposit.StateR.IDLE;
         Slides.state = Slides.State.RESET;
@@ -37,12 +33,16 @@ public class BlueSideFixed extends LinearOpMode {
         deposit.closeClaw();
 
         DetectorV2 detector = new DetectorV2(hardwareMap, telemetry);
+        String position = "";
         detector.init();
         TelemetryPacket packet = new TelemetryPacket();
         FtcDashboard dashboard = FtcDashboard.getInstance();
-
+        drive.setPoseEstimate(new Pose2d(78,-7,Math.toRadians(-90)));
 
         while(!isStarted()) {
+            //store the position;
+            position = detector.getPosition();
+            //telemetry actions
             telemetry.addData("MiddleColor", detector.getMiddleColor());
             telemetry.addData("RightColor", detector.getRightColor());
             telemetry.update();
@@ -52,18 +52,8 @@ public class BlueSideFixed extends LinearOpMode {
             packet.put("Level", deposit.armLevelThree);
             dashboard.sendTelemetryPacket(packet);
             FtcDashboard.getInstance().startCameraStream(detector.phoneCam, 4);
-
         }
-
-
-
-
-
-
-
-
-        waitForStart();
-
+        //check the position
         if(position == "middle"){
             Deposit.armLevelThree = Deposit.armLevelTwo;
             Slides.setPoint = 0;
@@ -74,7 +64,8 @@ public class BlueSideFixed extends LinearOpMode {
             Deposit.armLevelThree = Deposit.armLevelOne;
             Slides.setPoint = 0;
         }
-
+        waitForStart();
+        //generate trajectory
         TrajectorySequence seq = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .forward(6)
                 .setReversed(true)
@@ -107,20 +98,16 @@ public class BlueSideFixed extends LinearOpMode {
                     intake.setPower(0);
                 })
                 .setReversed(true)
-//                .splineTo(new Vector2d(70,-10),Math.toRadians(-30))
-//                .setReversed(true)
                 .splineTo(new Vector2d(62,-25),Math.toRadians(-90))
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     Deposit.stateR = Deposit.StateR.RESET_AUTO;
                 })
                 .setReversed(false)
                 .splineTo(new Vector2d(82,0),Math.toRadians(0))
-
                 .splineTo(new Vector2d(110,-2),Math.toRadians(0))
-
-
                 .build();
 
+        //follow trajectory;
         drive.followTrajectorySequenceAsync(seq);
 
         while(opModeIsActive()) {
