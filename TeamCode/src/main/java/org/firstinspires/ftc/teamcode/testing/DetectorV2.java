@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode.testing;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.DuckDetector;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -20,26 +18,21 @@ public class DetectorV2 {
     OpenCvCamera phoneCam;
     HardwareMap hwmp;
     Telemetry telemetry;
-    String ringPosition = "none";
-   // double rows, rect1Cols, rect2Cols;
+    String position = "none";
 
-    double lowColor;
-    double upColor;
+    public static int x1 = 20;
+    public static int x2 = 20;
+    public static int y1 = 100;
+    public int y2 = 100;
 
-    double rows;
-    double rows2;
-    double rect1Cols;
-    double rect2Cols;
+    int width = 100;
+    int height = 100;
 
-    public DetectorV2(String Color, HardwareMap hw, Telemetry telemetry, double rows, double rows2, double rect1Cols, double rect2Cols){
+    public DetectorV2(String Color, HardwareMap hw, Telemetry telemetry){
         this.hwmp = hw;
         this.telemetry = telemetry;
-        this.rows = rows;
-        this.rows2 = rows2;
-        this.rect1Cols = rect1Cols;
-        this.rect2Cols = rect2Cols;
-    }
 
+    }
 
     public void init(){
         int cameraMonitorViewId = hwmp.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwmp.appContext.getPackageName());
@@ -58,72 +51,37 @@ public class DetectorV2 {
         });
     }
 
-    public String getRingPosition(){
-        return ringPosition; }
-
-
+   public String getPosition(){
+        telemetry.addLine(position); return position;
+   }
     class Detecting extends OpenCvPipeline {
-
-
-        Mat YCbCr = new Mat();
-        Mat upperCrop = new Mat();
-        Mat lowerCrop = new Mat();
-        Mat outputMat = new Mat();
-
+        Rect leftRect = new Rect(x1,y1,width,height);
+        Rect rightRect = new Rect(x2,y2,width,height);
+        Mat leftCrop = new Mat();
+        Mat rightCrop = new Mat();
 
         @Override
         public Mat processFrame(Mat input) {
-            //convert mat.
-            Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
+            Imgproc.rectangle(input,leftRect,new Scalar(200,200,200),2);
+            Imgproc.rectangle(input,rightRect,new Scalar(200,200,200),2);
 
-            //copy input mat onto output
-            input.copyTo(outputMat);
+            leftCrop = input.submat(leftRect);
+            rightCrop = input.submat(rightRect);
 
+            Core.extractChannel(leftCrop,leftCrop,1);
+            Core.extractChannel(rightCrop,rightCrop,1);
 
-            Rect rect = new Rect((int) Math.round(YCbCr.rows() * rows), (int) Math.round(YCbCr.cols() * rect1Cols), 100, 69);
+            double leftColor = Core.mean(leftCrop).val[0];
+            double rightColor = Core.mean(rightCrop).val[0];
 
-            Rect rect2 = new Rect((int) Math.round(YCbCr.rows() * rows), (int) Math.round(YCbCr.cols() * rect2Cols), 100, 20);
-
-
-            Imgproc.rectangle(outputMat, rect, new Scalar(0, 0, 255), 2);
-            Imgproc.rectangle(outputMat, rect2, new Scalar(0, 0, 255), 2);
-
-
-            //crop the top part of the stack, and the bottom part of the stack.
-            lowerCrop = YCbCr.submat(rect2);
-            upperCrop = YCbCr.submat(rect);
-
-
-            //extract the Cb channel
-            Core.extractChannel(lowerCrop, lowerCrop, 2);
-            Core.extractChannel(upperCrop, upperCrop, 2);
-
-
-            //take average
-            Scalar lowerColor = Core.mean(lowerCrop);
-            Scalar upperColor = Core.mean(upperCrop);
-
-            lowColor = lowerColor.val[0];
-            upColor = upperColor.val[0];
-
-            //check which one to determine the
-
-            if (lowColor > 111 && upColor > 111 && lowColor < 120 && upColor < 120) {
-                ringPosition = "left";
-            } else if (lowColor > 135 && upColor > 125) {
-                ringPosition = "middle";
+            if (leftColor > 111 && leftColor < 70) {
+                 position = "left";
+            } else if (rightColor > 111 && rightColor < 70) {
+                position = "middle";
             } else {
-                ringPosition = "right";
+                position = "right";
             }
-
-            return outputMat;
+            return input;
         }
-    }
-    public double getVal(){
-        return lowColor;
-    }
-
-    public double getVal2(){
-        return upColor;
     }
 }

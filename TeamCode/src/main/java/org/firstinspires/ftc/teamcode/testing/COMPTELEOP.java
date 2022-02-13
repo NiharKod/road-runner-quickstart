@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
 @Config
-@TeleOp
-public class SlideTuning extends LinearOpMode {
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp
+public class COMPTELEOP extends LinearOpMode {
     Deposit deposit;
     DcMotorEx FL, FR, BL, BR;
     Intake intake;
