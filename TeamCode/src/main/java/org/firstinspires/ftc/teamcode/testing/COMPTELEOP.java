@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.drive.opmode.Tele;
 import org.firstinspires.ftc.teamcode.subsystems.Deposit;
@@ -47,8 +48,8 @@ public class COMPTELEOP extends LinearOpMode {
         Deposit.state = Deposit.State.IDLE;
         Deposit.stateR = Deposit.StateR.IDLE;
         Slides.state = Slides.State.RESET;
-        Deposit.armLevelThree = .64;
-        Slides.setPoint = 230;
+        Deposit.armLevelThree = .8;
+        Slides.setPoint = 350;
         deposit.wristIntake();
         deposit.armIntake();
         deposit.openClaw();
@@ -68,12 +69,13 @@ public class COMPTELEOP extends LinearOpMode {
             double leftPower = gamepad1.left_stick_y;
             double rightPower = gamepad1.right_stick_y;
 
+
             FL.setPower(leftPower);
             BL.setPower(leftPower);
             FR.setPower(rightPower);
             BR.setPower(rightPower);
 
-            intake.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
+            intake.setPower((gamepad1.left_trigger * .75) - (gamepad1.right_trigger * .75));
 
 
             boolean spinnerLeft = gamepad1.dpad_left;
@@ -86,6 +88,16 @@ public class COMPTELEOP extends LinearOpMode {
             }
             if(gamepad1.dpad_down){
                 spinner.setPower(0);
+            }
+
+            if(gamepad1.a){
+                Deposit.armLevelThree = Deposit.armLevelTwo;
+                Slides.setPoint = 0;
+            }
+
+            if(gamepad1.x){
+                Deposit.armLevelThree = .8;
+                Slides.setPoint = 350;
             }
 
 

@@ -39,8 +39,10 @@ public class BlueSideFixed extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         drive.setPoseEstimate(new Pose2d(78,-7,Math.toRadians(-90)));
 
+        Vector2d depositFirst = new Vector2d(62,-25);
+
         while(!isStarted()) {
-            //store the position;
+            //store the position lol;
             position = detector.getPosition();
             //telemetry actions
             telemetry.addData("MiddleColor", detector.getMiddleColor());
@@ -52,18 +54,28 @@ public class BlueSideFixed extends LinearOpMode {
             packet.put("Level", deposit.armLevelThree);
             dashboard.sendTelemetryPacket(packet);
             FtcDashboard.getInstance().startCameraStream(detector.phoneCam, 4);
+            System.out.println("Position " + position);
+            if(position.equals("middle")){
+                Deposit.armLevelThree = Deposit.armLevelTwo;
+                Slides.setPoint = 0;
+                depositFirst = depositFirst;
+
+            }else if(position.equals("right")){
+                Deposit.armLevelThree = .64;
+                Slides.setPoint = 230;
+                depositFirst = depositFirst;
+            }else if(position.equals("left")){
+                Deposit.armLevelThree = Deposit.armLevelOne;
+                Slides.setPoint = 0;
+                Vector2d newPosition = new Vector2d(62, -22);
+                depositFirst = newPosition;
+
+            }
+            System.out.println("Deposit state " + Deposit.armLevelThree);
+
         }
         //check the position
-        if(position.equals("middle")){
-            Deposit.armLevelThree = Deposit.armLevelTwo;
-            Slides.setPoint = 0;
-        }else if(position.equals("right")){
-            Deposit.armLevelThree = .64;
-            Slides.setPoint = 230;
-        }else if(position.equals("left")){
-            Deposit.armLevelThree = Deposit.armLevelOne;
-            Slides.setPoint = 0;
-        }
+
         waitForStart();
         //generate trajectory
         TrajectorySequence seq = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
@@ -72,7 +84,7 @@ public class BlueSideFixed extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(1,() -> {
                     Deposit.state = Deposit.State.START_AUTO;
                 })
-                .splineTo(new Vector2d(62,-23),Math.toRadians(-90))
+                .splineTo(depositFirst,Math.toRadians(-90))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     Deposit.stateR = Deposit.StateR.RESET_AUTO;
 

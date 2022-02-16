@@ -24,10 +24,10 @@ public class Deposit {
     public static double armIdle = 0.5;
     public static double armIntake = .2;
     public static double armLevelOne = 0.9;
-    public static double armLevelThree = 0.64;
+    public static double armLevelThree = 0.8;
     public static double armLevelTwo = .7;
-    public static double wristIntake = .77;
-    public static double wristDeposit = 0.02;
+    public static double wristIntake = .74;
+    public static double wristDeposit = 0.05;
     public static double wristIdle = .72;
 
     public Deposit(HardwareMap hardwareMap, Gamepad gamepad1, ElapsedTime timer, Telemetry telemetry){
@@ -152,7 +152,7 @@ public class Deposit {
     }
 
     public void update(){
-        if(gamepad.x){
+        if(gamepad.x || gamepad.a){
             state = State.START;
             timer.reset();
         }
@@ -218,19 +218,19 @@ public class Deposit {
                 break;
             case WRIST_IDLE:
                 wristIdle();
-                if(timer.milliseconds() > 600){
-                    stateR = StateR.SLIDES_RESET;
-                }
-                break;
-            case SLIDES_RESET:
-                Slides.state = Slides.State.RESET;
-                if(timer.milliseconds() > 750){
+                if(timer.milliseconds() > 800){
                     stateR = StateR.CLOSE_CLAW;
                 }
                 break;
             case CLOSE_CLAW:
                 closeClaw();
-                if(timer.milliseconds() > 900){
+                if(timer.milliseconds() > 950){
+                    stateR = StateR.SLIDES_RESET;
+                }
+                break;
+            case SLIDES_RESET:
+                Slides.state = Slides.State.RESET;
+                if(timer.milliseconds() > 1150){
                     stateR = StateR.ARM_INTAKE;
                 }
                 break;
@@ -242,15 +242,14 @@ public class Deposit {
                 break;
             case OPEN_CLAW:
                 openClaw();
-                if(timer.milliseconds() > 2000){
+                if(timer.milliseconds() > 1300){
                     stateR = StateR.WRIST_INTAKE;
                 }
                 break;
             case WRIST_INTAKE:
                 wristIntake();
-                state = State.STOP_INTAKE;
-                if(timer.milliseconds() > 2100){
-                    stateR = StateR.STOP_INTAKE;
+                if(timer.milliseconds() > 1350){
+                    stateR = StateR.IDLE;
                 }
                 return;
         }
@@ -278,37 +277,37 @@ public class Deposit {
                 break;
             case WRIST_IDLE:
                 wristIdle();
-                if(timer.milliseconds() > 600){
-                    stateR = StateR.SLIDES_RESET;
-                }
-                break;
-            case SLIDES_RESET:
-                Slides.state = Slides.State.RESET;
-                if(timer.milliseconds() > 750){
+                if(timer.milliseconds() > 800){
                     stateR = StateR.CLOSE_CLAW;
                 }
                 break;
             case CLOSE_CLAW:
                 closeClaw();
-                if(timer.milliseconds() > 900){
+                if(timer.milliseconds() > 950){
+                    stateR = StateR.SLIDES_RESET;
+                }
+                break;
+            case SLIDES_RESET:
+                Slides.state = Slides.State.RESET;
+                if(timer.milliseconds() > 1150){
                     stateR = StateR.ARM_INTAKE;
                 }
                 break;
             case ARM_INTAKE:
                 armIntake();
-                if(timer.milliseconds() > 1050){
+                if(timer.milliseconds() > 1300){
                     stateR = StateR.OPEN_CLAW;
                 }
                 break;
             case OPEN_CLAW:
                 openClaw();
-                if(timer.milliseconds() > 1400){
+                if(timer.milliseconds() > 1300){
                     stateR = StateR.WRIST_INTAKE;
                 }
                 break;
             case WRIST_INTAKE:
                 wristIntake();
-                if(timer.milliseconds() > 1500){
+                if(timer.milliseconds() > 1350){
                     stateR = StateR.IDLE;
                 }
                 return;
