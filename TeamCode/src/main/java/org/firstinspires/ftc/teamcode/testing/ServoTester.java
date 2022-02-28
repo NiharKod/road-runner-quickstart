@@ -25,7 +25,7 @@ public class ServoTester extends LinearOpMode {
             if(gamepad1.a){
                 depo.wristIdle();
             }
-
+    //  hi nihar
             if(gamepad1.b){
                depo.wristDeposit();
             }
