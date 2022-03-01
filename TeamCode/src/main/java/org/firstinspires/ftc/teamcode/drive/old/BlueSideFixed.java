@@ -1,20 +1,22 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive.old;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
-import org.firstinspires.ftc.teamcode.subsystems.Deposit;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Slides;
+import org.firstinspires.ftc.teamcode.subsystems.old.Deposit;
+import org.firstinspires.ftc.teamcode.subsystems.old.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.old.Slides;
 import org.firstinspires.ftc.teamcode.testing.DetectorV2;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
+@Disabled
 @Autonomous
 public class BlueSideFixed extends LinearOpMode {
     @Override

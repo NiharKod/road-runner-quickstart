@@ -43,9 +43,9 @@ public class DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    public static double WHEEL_RADIUS = (72.0 / 25.4) / 2; // in
-    public static double GEAR_RATIO = 20.0/23.0; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 10; // in
+    public static double WHEEL_RADIUS = 1.88976; // in
+    public static double GEAR_RATIO = 1/1; // output (wheel) speed / input (motor) speed
+    public static double TRACK_WIDTH = 10.236; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -64,8 +64,8 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 22;
-    public static double MAX_ACCEL = 30;
+    public static double MAX_VEL = 50;
+    public static double MAX_ACCEL = 40;
    // public static double MAX_VEL = 40;
    // public static double MAX_ACCEL = 45;
 

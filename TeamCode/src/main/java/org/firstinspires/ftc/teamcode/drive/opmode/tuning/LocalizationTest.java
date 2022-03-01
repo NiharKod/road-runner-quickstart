@@ -1,16 +1,21 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive.opmode.tuning;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
-import org.firstinspires.ftc.teamcode.subsystems.Deposit;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -19,37 +24,24 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-@Disabled
 @TeleOp(group = "drive")
-public class Tele extends LinearOpMode {
-    public Servo claw;
-
+public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleTankDrive drive = new SampleTankDrive(hardwareMap);
-        ElapsedTime time = new ElapsedTime();
-      //  Deposit deposit = new Deposit(hardwareMap,gamepad1, time);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Intake intake = new Intake(hardwareMap);
-
-        claw = hardwareMap.get(Servo.class, "claw");
-
-
 
         waitForStart();
-        claw.setPosition(.5);
+
         while (!isStopRequested()) {
             drive.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
-                            0,
-                                    -gamepad1.right_stick_x
+                            -gamepad1.left_stick_x,
+                            -gamepad1.right_stick_x
                     )
             );
-
-           intake.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
-
 
             drive.update();
 
@@ -61,3 +53,4 @@ public class Tele extends LinearOpMode {
         }
     }
 }
+

@@ -1,23 +1,15 @@
 package org.firstinspires.ftc.teamcode.testing;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
-import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.drive.opmode.Tele;
-import org.firstinspires.ftc.teamcode.subsystems.Deposit;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Slides;
+import org.firstinspires.ftc.teamcode.subsystems.old.Deposit;
+import org.firstinspires.ftc.teamcode.subsystems.old.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.old.Slides;
 @Config
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class COMPTELEOP extends LinearOpMode {

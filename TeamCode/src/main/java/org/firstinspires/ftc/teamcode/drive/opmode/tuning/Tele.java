@@ -1,14 +1,15 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive.opmode.tuning;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
+import org.firstinspires.ftc.teamcode.subsystems.old.Intake;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -17,40 +18,45 @@ import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
+@Disabled
 @TeleOp(group = "drive")
-public class LocalizationTest extends LinearOpMode {
-    DcMotorEx FL, FR, BL, BR;    @Override
+public class Tele extends LinearOpMode {
+    public Servo claw;
+
+    @Override
     public void runOpMode() throws InterruptedException {
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
-        FL = hardwareMap.get(DcMotorEx.class, "FL");
-        FR = hardwareMap.get(DcMotorEx.class, "FR");
-        BL = hardwareMap.get(DcMotorEx.class, "BL");
-        BR = hardwareMap.get(DcMotorEx.class, "BR");
-
-
+        ElapsedTime time = new ElapsedTime();
+      //  Deposit deposit = new Deposit(hardwareMap,gamepad1, time);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        drive.setPoseEstimate(new Pose2d(30,-7,Math.toRadians(90)));
+        drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Intake intake = new Intake(hardwareMap);
+
+        claw = hardwareMap.get(Servo.class, "claw");
+
+
 
         waitForStart();
+        claw.setPosition(.5);
+        while (!isStopRequested()) {
+            drive.setWeightedDrivePower(
+                    new Pose2d(
+                            -gamepad1.left_stick_y,
+                            0,
+                                    -gamepad1.right_stick_x
+                    )
+            );
 
+           intake.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
 
-        while(opModeIsActive()) {
-            double leftPower = gamepad1.left_stick_y;
-            double rightPower = gamepad1.right_stick_y;
-
-            FL.setPower(-leftPower);
-            BL.setPower(-leftPower);
-            FR.setPower(-rightPower);
-            BR.setPower(-rightPower);
 
             drive.update();
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
+            telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
         }
-        }
     }
-
+}
