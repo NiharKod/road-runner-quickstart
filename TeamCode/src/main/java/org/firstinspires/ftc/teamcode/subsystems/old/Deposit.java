@@ -107,7 +107,6 @@ public class Deposit {
         if(state.equals(State.START_AUTO)){
             state = State.START;
             timer.reset();
-
        }
         switch(state){
             case START:

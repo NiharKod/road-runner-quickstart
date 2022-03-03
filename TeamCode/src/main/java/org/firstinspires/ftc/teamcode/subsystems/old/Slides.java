@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Config
 public class Slides {
     public DcMotorEx leftMotor;
     public DcMotorEx rightMotor;

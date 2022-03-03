@@ -22,7 +22,7 @@ public class Intake {
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
+      //  distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
     }
 
 
@@ -31,21 +31,11 @@ public class Intake {
     }
 
     public void setPower(double power) {
-        if(distanceSensor.getDistance(DistanceUnit.CM) > distanceThreshold){
             intake.setPower(power);
-        }
-        else{
-            intake.setPower(-power);
-        }
     }
 
-    public boolean hasFreight(){
-        return distanceSensor.getDistance(DistanceUnit.CM) < distanceThreshold;
-    }
 
-    public double getDistance(){
-        return distanceSensor.getDistance(DistanceUnit.CM);
-    }
+
 
 
 }
